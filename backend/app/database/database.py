@@ -15,6 +15,13 @@ def create_database_engine() -> Engine | None:
     if not database_url:
         return None
 
+    # Neon and most hosted providers supply postgresql:// URLs. This project
+    # installs psycopg 3, so select its SQLAlchemy dialect explicitly.
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
     return create_engine(database_url, pool_pre_ping=True)
 
 
